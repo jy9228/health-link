@@ -1,0 +1,42 @@
+<div class="doctor-card">
+  @if (doctor().avatarUrl && !imageError()) {
+    <img
+      class="doctor-card__avatar"
+      [src]="doctor().avatarUrl"
+      [alt]="doctor().name"
+      (error)="onImageError()"
+    />
+  } @else {
+    <div class="doctor-card__avatar-fallback">{{ initials }}</div>
+  }
+  <div class="doctor-card__info">
+    <h3 class="doctor-card__name">{{ doctor().name }}</h3>
+    <p class="doctor-card__specialty">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="doctor-card__icon">
+        <path d="M19 8C20.6569 8 22 6.65685 22 5C22 3.34315 20.6569 2 19 2C17.3431 2 16 3.34315 16 5C16 6.65685 17.3431 8 19 8Z"/>
+        <path d="M14 6H5C3.34 6 2 7.34 2 9V18C2 19.66 3.34 21 5 21H14C15.66 21 17 19.66 17 18V9C17 7.34 15.66 6 14 6Z"/>
+      </svg>
+      {{ doctor().specialty }}
+    </p>
+    @if (doctor().isAvailable) {
+      <span class="doctor-card__status" [class.doctor-card__status--busy]="isBusy">
+        <span class="doctor-card__status-dot"></span>
+        {{ availabilityText }}
+      </span>
+    } @else {
+      <span class="doctor-card__status doctor-card__status--unavailable">
+        {{ availabilityText }}
+      </span>
+    }
+  </div>
+  <button
+    class="doctor-card__book-btn"
+    (click)="onBook()"
+    [disabled]="!doctor().isAvailable"
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+    </svg>
+    Book Consultation
+  </button>
+</div>

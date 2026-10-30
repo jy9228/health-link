@@ -1,0 +1,36 @@
+<div class="consultation-card" (click)="onClick()" role="button" tabindex="0" (keydown.enter)="onClick()">
+  <div class="consultation-card__icon-wrapper">
+    @if (consultation().consultationType === 'VideoCall') {
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--primary)">
+        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+      </svg>
+    } @else {
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--primary)">
+        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+      </svg>
+    }
+  </div>
+  <div class="consultation-card__info">
+    <div class="consultation-card__top">
+      <h4 class="consultation-card__doctor">{{ consultation().doctorName }}</h4>
+      <span class="consultation-card__status"
+        [class.consultation-card__status--scheduled]="consultation().status === 'Scheduled'"
+        [class.consultation-card__status--completed]="consultation().status === 'Completed'"
+        [class.consultation-card__status--cancelled]="consultation().status === 'Cancelled'">
+        {{ consultation().status }}
+      </span>
+    </div>
+    <p class="consultation-card__detail">
+      {{ consultation().doctorSpecialty }} · {{ typeLabel }}
+    </p>
+    <p class="consultation-card__time">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/>
+      </svg>
+      {{ consultation().preferredTime | date:'d MMM yyyy, h:mm a' }}
+    </p>
+  </div>
+  <svg class="consultation-card__chevron" width="20" height="20" viewBox="0 0 24 24" fill="var(--gray-400)">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+  </svg>
+</div>

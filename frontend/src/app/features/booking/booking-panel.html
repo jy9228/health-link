@@ -1,0 +1,193 @@
+@if (isOpen()) {
+  <div class="booking-overlay" (click)="onBackdropClick($event)" (keydown.escape)="onClose()">
+    <aside class="booking-panel" role="dialog" aria-label="Book Consultation">
+      <div class="booking-panel__header">
+        <div>
+          <h2 class="booking-panel__title">Book Consultation</h2>
+          <p class="booking-panel__subtitle">Schedule a consultation with {{ doctor().name }}</p>
+        </div>
+        <button class="booking-panel__close" (click)="onClose()" aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="booking-panel__doctor">
+        <img [src]="doctor().avatarUrl" [alt]="doctor().name" class="booking-panel__doctor-avatar" />
+        <div class="booking-panel__doctor-info">
+          <h3 class="booking-panel__doctor-name">{{ doctor().name }}</h3>
+          <p class="booking-panel__doctor-specialty">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 8C20.6569 8 22 6.65685 22 5C22 3.34315 20.6569 2 19 2C17.3431 2 16 3.34315 16 5C16 6.65685 17.3431 8 19 8Z"/>
+              <path d="M14 6H5C3.34 6 2 7.34 2 9V18C2 19.66 3.34 21 5 21H14C15.66 21 17 19.66 17 18V9C17 7.34 15.66 6 14 6Z"/>
+            </svg>
+            {{ doctor().specialty }}
+          </p>
+          @if (doctor().isAvailable) {
+            <span class="booking-panel__doctor-status">
+              <span class="booking-panel__status-dot"></span>
+              Available now
+            </span>
+          }
+        </div>
+      </div>
+
+      @if (submitted()) {
+        <div class="booking-panel__success">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--green)">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <h3>Booking Confirmed!</h3>
+          <p>Your consultation has been scheduled successfully.</p>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="booking-panel__form">
+          <!-- Step 1: Consultation Type -->
+          <div class="booking-panel__section">
+            <div class="booking-panel__section-label">
+              <span class="booking-panel__step">1</span>
+              <span class="booking-panel__section-title">Consultation Type</span>
+            </div>
+            <div class="booking-panel__type-cards">
+              <button
+                type="button"
+                class="type-card"
+                [class.type-card--selected]="selectedType() === 'Chat'"
+                (click)="selectType('Chat')"
+              >
+                <div class="type-card__icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+                  </svg>
+                </div>
+                <span class="type-card__label">Chat</span>
+                <span class="type-card__desc">Text-based consultation</span>
+                @if (selectedType() === 'Chat') {
+                  <span class="type-card__check">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </span>
+                }
+              </button>
+              <button
+                type="button"
+                class="type-card"
+                [class.type-card--selected]="selectedType() === 'VideoCall'"
+                (click)="selectType('VideoCall')"
+              >
+                <div class="type-card__icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                  </svg>
+                </div>
+                <span class="type-card__label">Video Call</span>
+                <span class="type-card__desc">Face-to-face via video</span>
+                @if (selectedType() === 'VideoCall') {
+                  <span class="type-card__check">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </span>
+                }
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: Date & Time -->
+          <div class="booking-panel__section">
+            <div class="booking-panel__section-label">
+              <span class="booking-panel__step">2</span>
+              <span class="booking-panel__section-title">Preferred Date & Time</span>
+            </div>
+
+            <input
+              type="date"
+              class="booking-panel__date-input"
+              formControlName="preferredDate"
+              [min]="minDate"
+              (change)="onDateChange($event)"
+            />
+
+            <div class="booking-panel__time-slots">
+              @for (slot of timeSlots; track slot) {
+                <button
+                  type="button"
+                  class="time-slot"
+                  [class.time-slot--selected]="selectedTime() === slot"
+                  [class.time-slot--disabled]="isSlotDisabled(slot)"
+                  [class.time-slot--booked]="isSlotBooked(slot)"
+                  [disabled]="isSlotDisabled(slot)"
+                  (click)="selectTime(slot)"
+                >
+                  {{ slot }}
+                  @if (isSlotBooked(slot)) {
+                    <span class="time-slot__booked-label">Booked</span>
+                  }
+                </button>
+              }
+            </div>
+
+            @if (form.get('preferredTime')?.touched && form.get('preferredTime')?.hasError('required')) {
+              <p class="booking-panel__error">Please select a time slot.</p>
+            }
+          </div>
+
+          <!-- Step 3: Reason for Visit -->
+          <div class="booking-panel__section">
+            <div class="booking-panel__section-label">
+              <span class="booking-panel__step">3</span>
+              <span class="booking-panel__section-title">Reason for Visit</span>
+            </div>
+            <textarea
+              formControlName="reasonForVisit"
+              class="booking-panel__textarea"
+              rows="4"
+              placeholder="Describe your symptoms or reason for the visit..."
+              maxlength="500"
+            ></textarea>
+            <div class="booking-panel__textarea-footer">
+              @if (form.get('reasonForVisit')?.touched && form.get('reasonForVisit')?.hasError('required')) {
+                <p class="booking-panel__error">Please describe your reason for visit.</p>
+              }
+              <span class="booking-panel__char-count">{{ reasonLength }}/500</span>
+            </div>
+          </div>
+
+          @if (errorMessage()) {
+            <div class="booking-panel__api-error">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <button
+            type="submit"
+            class="booking-panel__submit"
+            [disabled]="submitting()"
+          >
+            @if (submitting()) {
+              <span class="booking-panel__submit-spinner"></span>
+              Booking...
+            } @else {
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/>
+              </svg>
+              Confirm Booking
+            }
+          </button>
+
+          <p class="booking-panel__disclaimer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+            </svg>
+            Your information is secure and confidential.
+          </p>
+        </form>
+      }
+    </aside>
+  </div>
+}

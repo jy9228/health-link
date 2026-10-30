@@ -1,0 +1,35 @@
+<app-header />
+
+<main class="main">
+  <div class="main__container">
+    <app-hero-banner />
+    <app-stats-cards />
+
+    <div class="main__content">
+      <div class="main__left">
+        <app-doctor-list (bookDoctor)="onBookDoctor($event)" />
+      </div>
+      <div class="main__right">
+        <app-consultation-list (viewConsultation)="onViewConsultation($event)" />
+      </div>
+    </div>
+  </div>
+</main>
+
+@if (selectedDoctor()) {
+  <app-booking-panel
+    [doctor]="selectedDoctor()!"
+    [isOpen]="isPanelOpen()"
+    (closePanel)="onClosePanel()"
+    (booked)="onBooked()"
+  />
+}
+
+@if (selectedConsultation()) {
+  <app-consultation-detail
+    [consultation]="selectedConsultation()!"
+    [isOpen]="isDetailOpen()"
+    (closeDetail)="onCloseDetail()"
+    (cancelled)="onCancelled()"
+  />
+}

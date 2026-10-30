@@ -1,0 +1,90 @@
+@if (isOpen()) {
+  <div class="detail-overlay" (click)="onBackdropClick($event)" (keydown.escape)="onClose()">
+    <aside class="detail-panel" role="dialog" aria-label="Consultation Details">
+      <div class="detail-panel__header">
+        <div>
+          <h2 class="detail-panel__title">Consultation Details</h2>
+          <p class="detail-panel__subtitle">{{ consultation().doctorName }}</p>
+        </div>
+        <button class="detail-panel__close" (click)="onClose()" aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="detail-panel__status-bar">
+        <span class="detail-panel__status-badge"
+          [class.detail-panel__status-badge--scheduled]="consultation().status === 'Scheduled'"
+          [class.detail-panel__status-badge--completed]="consultation().status === 'Completed'"
+          [class.detail-panel__status-badge--cancelled]="consultation().status === 'Cancelled'">
+          {{ consultation().status }}
+        </span>
+      </div>
+
+      <div class="detail-panel__fields">
+        <div class="detail-panel__field">
+          <span class="detail-panel__field-label">Doctor</span>
+          <span class="detail-panel__field-value">{{ consultation().doctorName }}</span>
+        </div>
+        <div class="detail-panel__field">
+          <span class="detail-panel__field-label">Specialty</span>
+          <span class="detail-panel__field-value">{{ consultation().doctorSpecialty }}</span>
+        </div>
+        <div class="detail-panel__field">
+          <span class="detail-panel__field-label">Type</span>
+          <span class="detail-panel__field-value">{{ typeLabel }}</span>
+        </div>
+        <div class="detail-panel__field">
+          <span class="detail-panel__field-label">Date & Time</span>
+          <span class="detail-panel__field-value">{{ consultation().preferredTime | date:'d MMM yyyy, h:mm a' }}</span>
+        </div>
+        <div class="detail-panel__field">
+          <span class="detail-panel__field-label">Patient</span>
+          <span class="detail-panel__field-value">{{ consultation().patientName }}</span>
+        </div>
+        <div class="detail-panel__field detail-panel__field--full">
+          <span class="detail-panel__field-label">Reason for Visit</span>
+          <span class="detail-panel__field-value">{{ consultation().reasonForVisit }}</span>
+        </div>
+        <div class="detail-panel__field">
+          <span class="detail-panel__field-label">Booked On</span>
+          <span class="detail-panel__field-value">{{ consultation().createdAt | date:'d MMM yyyy, h:mm a' }}</span>
+        </div>
+      </div>
+
+      @if (consultation().status === 'Scheduled') {
+        <div class="detail-panel__actions">
+          @if (!showConfirm()) {
+            <button class="detail-panel__cancel-btn" (click)="promptCancel()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+              </svg>
+              Cancel Consultation
+            </button>
+          } @else {
+            <div class="detail-panel__confirm">
+              <p class="detail-panel__confirm-text">Are you sure you want to cancel this consultation?</p>
+              @if (errorMessage()) {
+                <p class="detail-panel__error">{{ errorMessage() }}</p>
+              }
+              <div class="detail-panel__confirm-actions">
+                <button class="detail-panel__confirm-no" (click)="dismissCancel()" [disabled]="cancelling()">
+                  Keep It
+                </button>
+                <button class="detail-panel__confirm-yes" (click)="confirmCancel()" [disabled]="cancelling()">
+                  @if (cancelling()) {
+                    <span class="detail-panel__spinner"></span>
+                    Cancelling...
+                  } @else {
+                    Yes, Cancel
+                  }
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </aside>
+  </div>
+}
